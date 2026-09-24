@@ -1,3 +1,48 @@
+# Android Wi-Fi control fork
+
+This fork adds automatic Android Wi-Fi control to KOReader.
+The changes are on the `android-wifi-control` branch.
+
+## Differences from upstream
+
+- Enables Wi-Fi directly when KOReader requests a network connection,
+  using the companion Android launcher fork.
+- Applies KOReader's existing **Action when done with Wi-Fi** preference
+  after KOSync progress upload/download completes, including failed requests:
+  **Leave on**, **Turn off**, or **Prompt**.
+- Applies this completion policy when KOReader initiated the connection.
+  Wi-Fi that was already connected before the operation is left alone.
+- Waits for the Wi-Fi radio to turn off before reporting disconnection.
+- Uses the launcher submodule from
+  [lophas/android-luajit-launcher](https://github.com/lophas/android-luajit-launcher/tree/android-wifi-control).
+
+## Tested environment
+
+User-tested on a BOOX Go 7 running Android 13, using an ARM64 release build.
+Compatibility with other devices has not been verified.
+
+## Building and installing
+
+Clone this branch with its submodules:
+
+    git clone --recurse-submodules --branch android-wifi-control https://github.com/lophas/koreader.git
+
+With the upstream build prerequisites installed, build with:
+
+    ./kodev release android-arm64
+
+Align and sign the resulting APK before installation. Updates must use
+the same signing key as the installed app.
+
+Commit source changes before building: the bundle revision is derived from
+`git describe HEAD`. Reusing a revision can cause the launcher to keep the
+previously extracted Lua bundle. Verify the version inside
+`assets/module/version.txt` and install the newly built, signed APK.
+
+Signing keys and passwords must remain private.
+
+---
+
 [![KOReader](https://raw.githubusercontent.com/koreader/koreader.github.io/master/koreader-logo.png)](https://koreader.rocks)
 
 #### KOReader is a document viewer primarily aimed at e-ink readers.
