@@ -320,10 +320,34 @@ function Device:initNetworkManager(NetworkMgr)
         end
     end
     function NetworkMgr:turnOffWifi(complete_callback)
-        android.openWifiSettings()
-        if complete_callback then
-            complete_callback()
+        local function failed()
+            logger.warn("Android: Wi-Fi could not be disabled")
+            UIManager:show(require("ui/widget/infomessage"):new{
+                text = _("Could not turn off Wi-Fi."),
+                timeout = 5,
+            })
         end
+        if not android.disableWifi() then
+            failed()
+            return false
+        end
+        local attempts = 0
+        local function check()
+            if not android.isWifiEnabled() then
+                self:setWifiState(false)
+                self.is_connected = false
+                if complete_callback then complete_callback() end
+                return
+            end
+            attempts = attempts + 1
+            if attempts >= 40 then
+                failed()
+                return
+            end
+            UIManager:scheduleIn(0.25, check)
+        end
+        check()
+        return true
     end
 
     function NetworkMgr:openSettings()

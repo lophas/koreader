@@ -758,6 +758,11 @@ function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
         chosen_device_name,
         self.device_id,
         function(ok, status, body)
+            if Device:isAndroid() then
+                UIManager:nextTick(function()
+                    NetworkMgr:afterWifiAction()
+                end)
+            end
             logger.dbg("KOSync: [Push] progress to", percentage * 100, "% =>", progress, "for", self.view.document.file)
             logger.dbg("KOSync: ok:", ok, "body:", body)
             if ok then
@@ -777,6 +782,11 @@ function KOSync:updateProgress(ensure_networking, interactive, on_suspend)
             end
         end)
     if not ok then
+        if Device:isAndroid() then
+            UIManager:nextTick(function()
+                NetworkMgr:afterWifiAction()
+            end)
+        end
         if interactive then showSyncError() end
         if err then logger.dbg("err:", err) end
         -- Network unreachable: queue for retry
@@ -839,6 +849,11 @@ function KOSync:getProgress(ensure_networking, interactive)
         self.settings.userkey,
         doc_digest,
         function(ok, body)
+            if Device:isAndroid() then
+                UIManager:nextTick(function()
+                    NetworkMgr:afterWifiAction()
+                end)
+            end
             logger.dbg("KOSync: [Pull] progress for", self.view.document.file)
             logger.dbg("KOSync: ok:", ok, "body:", body)
             if not ok or not body then
@@ -932,6 +947,11 @@ function KOSync:getProgress(ensure_networking, interactive)
             end
         end)
     if not ok then
+        if Device:isAndroid() then
+            UIManager:nextTick(function()
+                NetworkMgr:afterWifiAction()
+            end)
+        end
         if interactive then showSyncError() end
         if err then logger.dbg("err:", err) end
     end
